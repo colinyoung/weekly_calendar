@@ -4,8 +4,8 @@ require File.expand_path('../lib/weekly_calendar/version', __FILE__)
 Gem::Specification.new do |gem|
   gem.authors       = ["Colin Young"]
   gem.email         = ["me@colinyoung.com"]
-  gem.description   = %q{TODO: Write a gem description}
-  gem.summary       = %q{TODO: Write a gem summary}
+  gem.description   = %q{weekly calendar that supports tasks and multi-day events}
+  gem.summary       = %q{weekly calendar that supports tasks and multi-day events}
   gem.homepage      = ""
   
   gem.add_dependency 'week'
