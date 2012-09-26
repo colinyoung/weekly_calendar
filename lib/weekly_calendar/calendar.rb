@@ -25,10 +25,11 @@ module WeeklyCalendar
     end
     
     def days
+      start_week = (@date - 1.week)
       if @options[:weekends]
-        @date.week
+        start_week.week
       else
-        @date.week[1..5]
+        start_week.week[1..5]
       end
     end
     
