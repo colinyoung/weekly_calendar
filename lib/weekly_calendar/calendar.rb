@@ -12,7 +12,7 @@ module WeeklyCalendar
       @options = options
       
       @view = options[:view]
-      @date = options[:for] || options[:date] || Date.today
+      @date = options[:for] || options[:date] || Date.current
       @events = options[:events] || {}
     end
     
@@ -26,7 +26,7 @@ module WeeklyCalendar
     
     def days
       start_week = (@date - 1.week)
-      if @options[:weekends]
+      if @options[:weekend]
         start_week.week
       else
         start_week.week[1..5]
@@ -48,23 +48,44 @@ module WeeklyCalendar
       content_tag :tr do
         String.new.html_safe.tap do |s|
           @days.each do |date|
-            s << content_tag(:td, events(date))
+            # Customizable classes
+            classes = Array.new.tap do |k|
+              k << "today" if date.same_day_as?(@date)
+              k << "past" if date.past? and !date.same_day_as?(@date)
+            end
+            
+            s << content_tag(:td, date_box(date) + events_ending_on_date(date) + events_for_date(date), class: classes.join(' '))
           end
         end
       end
     end
     
-    def events(date)
-      events = @events[date.to_date]
+    def date_box(date)
+      content_tag :div, date.mday, class: 'wc-date'
+    end
+    
+    def events_for_date(date)
+      events = @events.delete(date.to_date)
       return if events.nil?
       
-      content_tag :ul do
+      content_tag :div, class: 'wc-events' do
         safe_str do |s|
           events.each do |event|
             next if event.nil?
             
-            s << content_tag(:div, class: 'wc-event-container') do
-              @view.render 'weekly_calendar/event', event: event
+            s << render_event(event)
+          end
+        end
+      end
+    end
+    
+    def events_ending_on_date(date)      
+      unless (events = events_ending_on(date)).empty?
+        content_tag :div, class: 'wc-events-ending' do
+          safe_str do |s|
+            events.each do |event|
+              next if event.nil?
+              s << render_event(event)
             end
           end
         end
@@ -81,6 +102,24 @@ module WeeklyCalendar
     
     def content_tag(*args, &block)
       @view.content_tag(*args, &block)
+    end
+    
+    protected
+    
+    def render_event(event)
+      content_tag(:div, class: "wc-event-container wc-days-#{[event.days, 5].min}") do
+        @view.render 'weekly_calendar/event', event: event
+      end
+    end
+    
+    def events_ending_on(date)
+      Array.new.tap do |a|
+        @events.each do |k,events|
+          events.each do |e|
+            a << e if e.end_at_date == date.to_date
+          end
+        end
+      end
     end
     
   end
