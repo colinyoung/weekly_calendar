@@ -73,7 +73,7 @@ module WeeklyCalendar
           events.each do |event|
             next if event.nil?
             
-            s << render_event(event)
+            s << render_event(event, on: date.to_date)
           end
         end
       end
@@ -85,7 +85,7 @@ module WeeklyCalendar
           safe_str do |s|
             events.each do |event|
               next if event.nil?
-              s << render_event(event)
+              s << render_event(event, on: date.to_date)
             end
           end
         end
@@ -106,8 +106,8 @@ module WeeklyCalendar
     
     protected
     
-    def render_event(event)
-      content_tag(:div, class: "wc-event-container wc-days-#{[event.days, 5].min}") do
+    def render_event(event, options={})
+      content_tag(:div, class: "wc-event-container wc-days-#{[event.days(options[:on] || options[:date]), 5].min}") do
         @view.render 'weekly_calendar/event', event: event
       end
     end
