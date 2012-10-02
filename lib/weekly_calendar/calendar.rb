@@ -54,7 +54,7 @@ module WeeklyCalendar
               k << "past" if date.past? and !date.same_day_as?(@date)
             end
             
-            s << content_tag(:td, date_box(date) + events_ending_on_date(date) + events_for_date(date), class: classes.join(' '))
+            s << content_tag(:td, date_box(date) + events_ending_this_week(days, date) + events_for_date(date), class: classes.join(' '))
           end
         end
       end
@@ -79,12 +79,12 @@ module WeeklyCalendar
       end
     end
     
-    def events_ending_on_date(date)      
+    def events_ending_this_week(week, date)
       unless (events = events_ending_on(date)).empty?
         content_tag :div, class: 'wc-events-ending' do
-          safe_str do |s|
-            events.each do |event|
-              next if event.nil?
+          safe_str do |s|            
+            events.compact.each do |event|
+              next if event.start_at_date >= week.first.to_date              
               s << render_event(event, on: date.to_date)
             end
           end
