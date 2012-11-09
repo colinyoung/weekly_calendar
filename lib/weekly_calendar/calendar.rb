@@ -19,7 +19,7 @@ module WeeklyCalendar
     def to_s
       @days = days
       
-      content_tag :table, class: "weekly-calendar #{@options[:class]}" do
+      content_tag :table, class: "weekly-calendar #{@options[:class]}", id: @options[:id] do
         content_tag(:thead, headings) + content_tag(:tbody, body)
       end
     end
@@ -38,7 +38,8 @@ module WeeklyCalendar
         String.new.html_safe.tap do |s|
           @days.each do |d|
             # @todo Localize the month/day order
-            s << content_tag(:th, "#{Date::ABBR_DAYNAMES[d.wday]} #{d.month}/#{d.mday}")
+            others = [ class: date_classes(d) ]
+            s << content_tag(:th, "#{Date::ABBR_DAYNAMES[d.wday]} #{d.month}/#{d.mday}", *others)
           end
         end
       end
@@ -48,13 +49,8 @@ module WeeklyCalendar
       content_tag :tr do
         String.new.html_safe.tap do |s|
           @days.each do |date|
-            # Customizable classes
-            classes = Array.new.tap do |k|
-              k << "today" if date.same_day_as?(@date)
-              k << "past" if date.past? and !date.same_day_as?(@date)
-            end
-            
-            s << content_tag(:td, date_box(date) + events_ending_this_week(days, date) + events_for_date(date), class: classes.join(' '))
+            others = [ class: date_classes(date) ]
+            s << content_tag(:td, date_box(date) + events_ending_this_week(days, date) + events_for_date(date), *others)
           end
         end
       end
@@ -119,6 +115,13 @@ module WeeklyCalendar
             a << e if e.end_at_date == date.to_date
           end
         end
+      end
+    end
+    
+    def date_classes(date)
+      Array.new.tap do |k|
+        k << "today" if date.same_day_as?(@date)
+        k << "past" if date.past? and !date.same_day_as?(@date)
       end
     end
     
