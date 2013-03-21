@@ -49,8 +49,10 @@ module WeeklyCalendar
       content_tag :tr do
         String.new.html_safe.tap do |s|
           @days.each do |date|
-            others = [ class: date_classes(date) ]
-            s << content_tag(:td, date_box(date) + events_ending_this_week(days, date) + events_for_date(date), *others)
+            others = [ class: date_classes(date), :'data-date' => date.to_date ]
+            s << content_tag(:td,
+                              date_box(date) + events_ending_this_week(days, date) + events_for_date(date),
+                              *others)
           end
         end
       end
