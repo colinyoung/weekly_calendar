@@ -70,7 +70,7 @@ module WeeklyCalendar
         safe_str do |s|
           events.each do |event|
             next if event.nil?
-            
+
             s << render_event(event, on: date.to_date)
           end
         end
@@ -112,9 +112,9 @@ module WeeklyCalendar
     
     def events_ending_on(date)
       Array.new.tap do |a|
-        @events.each do |k,events|
-          events.each do |e|
-            a << e if e.end_at_date == date.to_date
+        @events.each do |date,events|
+          events.each do |event|
+            a << event if event.end_at_date == date.to_date
           end
         end
       end
