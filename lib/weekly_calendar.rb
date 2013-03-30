@@ -12,7 +12,8 @@ module WeeklyCalendar
 
     Hash.new.tap do |h|
       array.each do |object|
-        k = object.send(date_method).to_date
+        k = object.send(date_method).try(:to_date)
+        return if k.nil?
         h[k] ||= []
         h[k] << object
       end
