@@ -26,6 +26,9 @@ module WeeklyCalendar
     
     def days
       start_week = (@date - 1.week)
+      if ![0,6].include?(@date.wday) # is a weekday
+        start_week -= 1.week
+      end
       if @options[:weekend]
         start_week.week
       else
