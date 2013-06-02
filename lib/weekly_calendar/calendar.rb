@@ -39,6 +39,7 @@ module WeeklyCalendar
     def headings
       content_tag :tr do
         String.new.html_safe.tap do |s|
+          s << time_scale_heading if @options[:time_scale]
           @days.each do |d|
             # @todo Localize the month/day order
             others = [ class: date_classes(d) ]
@@ -51,6 +52,7 @@ module WeeklyCalendar
     def body
       content_tag :tr do
         String.new.html_safe.tap do |s|
+          s << time_scale if @options[:time_scale]
           @days.each do |date|
             others = [ class: date_classes(date), :'data-date' => date.to_date ]
             s << content_tag(:td,
@@ -60,7 +62,22 @@ module WeeklyCalendar
         end
       end
     end
-    
+
+    def time_scale
+      content_tag :td, class: 'wc-time-scale' do
+        String.new.html_safe.tap do |s|
+          @options[:time_scale].each_with_index do |h,i|
+            time_txt = (Time.utc(2000, 1, 1, @options[:time_scale].first, 0, 0) + i.hours).strftime("%l:%M %p")
+            s << content_tag(:div, time_txt, class: 'wc-time-scale-hour')
+          end
+        end
+      end
+    end
+
+    def time_scale_heading
+      content_tag :th, "", class: 'wc-time-scale-heading'
+    end
+
     def date_box(date)
       content_tag :div, date.mday, class: 'wc-date'
     end
@@ -108,7 +125,7 @@ module WeeklyCalendar
     protected
     
     def render_event(event, options={})
-      content_tag(:div, class: "wc-event-container wc-days-#{[event.days(options[:on] || options[:date]), 5].min}") do
+      content_tag(:div, class: "wc-event-container wc-event-duration-#{event.duration} wc-event-offset-#{event.start_time_offset}  wc-days-#{[event.days(options[:on] || options[:date]), 5].min}") do
         @view.render 'weekly_calendar/event', event: event
       end
     end
