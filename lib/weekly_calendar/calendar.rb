@@ -142,7 +142,7 @@ module WeeklyCalendar
     
     def date_classes(date)
       Array.new.tap do |k|
-        k << "today" if date.same_day_as?(@date)
+        k << "today" if date.same_day_as?(Date.current)
         k << "past" if date.past? and !date.same_day_as?(@date)
       end
     end
