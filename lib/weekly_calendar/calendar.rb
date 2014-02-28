@@ -131,7 +131,7 @@ module WeeklyCalendar
 
     def render_heading(date, options={})
       content_tag(:th, class: date_classes(date)) do
-        @view.render 'weekly_calendar/heading', event: date
+        @view.render 'weekly_calendar/heading', date: date
       end
     end
 
